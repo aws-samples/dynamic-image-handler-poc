@@ -6,7 +6,7 @@ This is a PoC created to support dynamic image rendition with an image resize su
 
 ## Architecture
 
-![image](./image.jpg)
+![image](./Image.jpg)
 
 
 ## Input / Output
