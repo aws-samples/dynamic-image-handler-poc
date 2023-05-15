@@ -1,14 +1,9 @@
 module.exports = {
-  preset: 'ts-jest',
-  roots: [
-    "./tests"
-  ],
-  coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "/tests/"
-  ],
+  preset: "ts-jest",
+  roots: ["./tests"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/tests/"],
   collectCoverage: true,
-  testEnvironment: 'node',
+  testEnvironment: "node",
   testResultsProcessor: "jest-sonar-reporter",
-  setupFiles: ['dotenv/config'],
+  setupFiles: ["dotenv/config"],
 };

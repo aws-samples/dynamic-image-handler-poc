@@ -10,7 +10,11 @@ export type Headers = Record<string, any>;
 export type ImageEdits = Record<string, any>;
 
 export class ImageHandlerError extends Error {
-  constructor(public readonly status: StatusCodes, public readonly code: string, public readonly message: string) {
+  constructor(
+    public readonly status: StatusCodes,
+    public readonly code: string,
+    public readonly message: string
+  ) {
     super();
   }
 }

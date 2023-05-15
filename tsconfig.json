@@ -16,7 +16,5 @@
     "index.js",
     "config/*.config.js" // for *.config.js files
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

@@ -25,7 +25,9 @@ export class SecretProvider {
     if (this.cache.secretId === secretId && this.cache.secret) {
       return this.cache.secret;
     } else {
-      const response = await this.secretsManager.getSecretValue({ SecretId: secretId }).promise();
+      const response = await this.secretsManager
+        .getSecretValue({ SecretId: secretId })
+        .promise();
       this.cache.secretId = secretId;
       this.cache.secret = response.SecretString;
 

@@ -8,7 +8,6 @@ This is a PoC created to support dynamic image rendition with an image resize su
 
 ![image](./Image.jpg)
 
-
 ## Input / Output
 
 Request:
@@ -39,7 +38,7 @@ Modified image response
 
 ### Local setup
 
- Clone the source code  
+Clone the source code  
  From the source root directory, run the below commands
 
 Install the dependencies
@@ -55,11 +54,13 @@ npm init @eslint/config
 ```
 
 Local build
+
 ```
 npm run build
 ```
 
 Local run
+
 ```
 npm run start
 ```
@@ -70,7 +71,7 @@ As described in the architecture above, setup the services listed below to get t
 
 1. Deploy this PoC application in an EC2 instance as described in the `Local setup`
 
-2. Use PM2 to run the Node App daemon in EC2 instance and verify the app 
+2. Use PM2 to run the Node App daemon in EC2 instance and verify the app
 
 ```
 npm run pm2
@@ -78,19 +79,17 @@ npm run pm2
 pm2 list
 ```
 
-Verify the endpoint: http://{hostname}:3146/ 
+Verify the endpoint: http://{hostname}:3146/
 
 3. Create an AMI of the EC2 instance - `POCAMI`
 4. Create a VPC
 5. Create private subnets across 2 AZs
 6. Create Security groups
 7. Create a role with access to S3, EC2 and use it when you launch the EC2 instance
-8. Create launch template using the AMI (POCAMI) you created in step 3. 
+8. Create launch template using the AMI (POCAMI) you created in step 3.
 9. Create auto scaling group using the launch template just created, add ALB with the target groups mapped.
 10. Create Cloudfront distribution with Origin set to the ALB created in step 9.
-
 
 ### To Do
 
 Cloudformation template to create the above stack
-
