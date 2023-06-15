@@ -69,11 +69,6 @@ npm run start
 
 CDK deployment
 
-
-### To Do
-
-Cloudformation template to create the above stack
-
 Install latest cdk version
 
 ```
@@ -108,7 +103,7 @@ Once you verify the synth output, deploy the stack using
 cdk deploy
 ```
 
-This should deploy all the required components and application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images
+This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
 
 Cleanup
 
