@@ -27,9 +27,7 @@ export default class App {
 
     // add the middleware to handle error, make sure to add if after registering routes method
     //this.express.use(addErrorHandler);
-    this.express.use(
-      bodyParser.json({ limit: "50mb", type: "application/json" })
-    );
+    this.express.use(bodyParser.json({ limit: "50mb", type: "application/json" }));
     this.express.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
     dotenv.config();
   }
@@ -48,11 +46,7 @@ export default class App {
     this.express.use(cors());
   }
 
-  private parseRequestHeader(
-    req: express.Request,
-    res: express.Response,
-    next: Function
-  ): void {
+  private parseRequestHeader(req: express.Request, res: express.Response, next: Function): void {
     next();
   }
 }
