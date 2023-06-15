@@ -82,22 +82,22 @@ export class DIHCdkStack extends cdk.Stack {
     this.IAMRole = this.addIAMRole();
 
     // Create auto scaling group - Launch Configuration
-    this.CfnLaunchConfiguration = this.addLaunchConfiguration(props)
+    this.CfnLaunchConfiguration = this.addLaunchConfiguration(props);
 
     // Waiting for VPC creation to complete
-    this.CfnLaunchConfiguration.node.addDependency(this.vpc)
+    this.CfnLaunchConfiguration.node.addDependency(this.vpc);
 
     // Create auto scaling group in above created VPC
-    this.CfnAutoScalingGroup = this.addAutoScalingGroup(props)
+    this.CfnAutoScalingGroup = this.addAutoScalingGroup(props);
 
     // Add a default listener to Application Load Balancer
-    this.CfnALBDefaultListener = this.addDefaultListener()
+    this.CfnALBDefaultListener = this.addDefaultListener();
 
     // Add listener rules to Application Load Balancer 
-    this.CfnALBDefaultListenerRule = this.addDefaultListenerRule()
+    this.CfnALBDefaultListenerRule = this.addDefaultListenerRule();
 
     // Add Outputs to CloudFormation stack
-    this.addOutputsToCloudFormationTemplate()
+    this.addOutputsToCloudFormationTemplate();
 
 
   }
