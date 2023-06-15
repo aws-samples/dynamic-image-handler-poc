@@ -15,5 +15,13 @@ Then build and deploy.
 
 ```bash
 $ npm run build
+$ cdk synth
 $ cdk deploy
 ```
+
+Delete the stack. Make sure to remove all the policies from the role before running destroy
+
+```bash
+$ cdk destroy
+```
+

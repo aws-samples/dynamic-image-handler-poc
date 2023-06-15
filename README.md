@@ -6,7 +6,10 @@ This is a PoC created to support dynamic image rendition with an image resize su
 
 ## Architecture
 
-![image](./Image.jpg)
+![image](./arch-diagram.png)
+
+
+
 
 ## Input / Output
 
@@ -20,7 +23,7 @@ http://{{host}}:{{port}}/image/:bucket/:edits/:key
 > key - Image name with extension
 
 Sample request:
-http://localhost:3146/image/source-bucket/800x800/sample1.jpg
+http://localhost/image/source-bucket/800x800/sample1.jpg
 
 Response:
 Modified image response
@@ -67,7 +70,7 @@ npm run start
 
 ### Server setup
 
-CDK deployment
+CDK deployment - This will install VPC, Subnets, NAT Gateway, ALB, ASG, EC2 launch configuration. Cloudfront deployment is not included in this stack. Please set it up manually if required. If deplpoying into GovCloud, you can utilize commercial CloudFront with GovCloud Origin as described here - https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/setting-up-cloudfront.html
 
 Install latest cdk version
 
@@ -107,7 +110,7 @@ This should deploy all the required infra components and the application. Use AL
 
 Cleanup
 
-Make sure to detach all policies from the role created first. Then execute the below command.
+Make sure to detach all policies from the role created. Then execute the below comman.
 
 ```
 cdk destroy
