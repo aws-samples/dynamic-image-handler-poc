@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
-    "lib": ["es2018"],
-    "target": "es2018",
+    "target": "ES2020",
     "module": "commonjs",
+    "lib": [
+      "es2020",
+      "dom"
+    ],
     "moduleResolution": "node",
     "outDir": "./build",
     "emitDecoratorMetadata": true,
@@ -16,5 +19,7 @@
     "index.js",
     "config/*.config.js" // for *.config.js files
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

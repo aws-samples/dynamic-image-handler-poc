@@ -78,7 +78,7 @@ export class ImageService {
   // eslint-disable-next-line @typescript-eslint/ban-types
   private async instantiateSharpImage(
     originalImage: Buffer,
-    options: Object
+    options: NonNullable<unknown>
   ): Promise<sharp.Sharp> {
     const image: sharp.Sharp = sharp(originalImage, options);
     return image;

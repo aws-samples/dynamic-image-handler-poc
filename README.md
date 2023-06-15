@@ -39,7 +39,7 @@ Modified image response
 ### Local setup
 
 Clone the source code  
- From the source root directory, run the below commands
+From the source root directory, run the below commands
 
 Install the dependencies
 
@@ -67,29 +67,54 @@ npm run start
 
 ### Server setup
 
-As described in the architecture above, setup the services listed below to get the PoC app up & running.
+CDK deployment
 
-1. Deploy this PoC application in an EC2 instance as described in the `Local setup`
-
-2. Use PM2 to run the Node App daemon in EC2 instance and verify the app
-
-```
-npm run pm2
-
-pm2 list
-```
-
-Verify the endpoint: http://{hostname}:3146/
-
-3. Create an AMI of the EC2 instance - `POCAMI`
-4. Create a VPC
-5. Create private subnets across 2 AZs
-6. Create Security groups
-7. Create a role with access to S3, EC2 and use it when you launch the EC2 instance
-8. Create launch template using the AMI (POCAMI) you created in step 3.
-9. Create auto scaling group using the launch template just created, add ALB with the target groups mapped.
-10. Create Cloudfront distribution with Origin set to the ALB created in step 9.
 
 ### To Do
 
 Cloudformation template to create the above stack
+
+Install latest cdk version
+
+```
+npm install -g aws-cdk
+```
+Make sure you are in source root directory.
+
+Goto `constructs` directory to access CDK scripts 
+```
+cd constructs
+```
+
+Install and build the cdk scripts
+
+```
+npm i
+npm run build
+```
+
+Execute below CDK commands to deploy the infrastructure and the application
+
+```
+cdk bootstrap
+
+cdk synth
+
+```
+
+Once you verify the synth output, deploy the stack using
+
+```
+cdk deploy
+```
+
+This should deploy all the required components and application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images
+
+Cleanup
+
+Make sure to detach all policies from the role created first. Then execute the below command.
+
+```
+cdk destroy
+```
+
