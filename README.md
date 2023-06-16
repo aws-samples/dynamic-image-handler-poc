@@ -69,7 +69,7 @@ npm run start
 
 CDK deployment - This will install VPC, Subnets, NAT Gateway, ALB, ASG, EC2 launch configuration. Cloudfront deployment is not included in this stack. Please set it up manually if required. If deplpoying into GovCloud, you can utilize commercial CloudFront with GovCloud Origin as described here - https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/setting-up-cloudfront.html
 
-!!!Note This deploymet doesn't add HTTPS certificates to ALB. Uses HTTP by default. Please modify the script to add HTTPS support for actual app implementation.
+NOTE: This deploymet doesn't add HTTPS certificates to ALB. Uses HTTP by default. Please modify the script to add HTTPS support for actual app implementation.
 
 
 #####  Install latest cdk version
@@ -109,7 +109,7 @@ cdk synth
 cdk deploy
 ```
 
-!!!Note This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
+NOTE: This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
 
 ### Cleanup
 
