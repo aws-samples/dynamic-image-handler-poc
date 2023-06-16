@@ -48,7 +48,7 @@ export class DIHCdkStack extends cdk.Stack {
   private readonly elbTgHealthCheckPath = "/";
   private readonly defaultLoadBalancerScheme = "internet-facing";
   private readonly defaultLBPort = 80;
-  private readonly defaultASGCapacity = 1;
+  private readonly defaultASGCapacity = 2;
 
   constructor(scope: cdk.App, id: string, props: DIHStackProps) {
     super(scope, id);
@@ -155,9 +155,6 @@ export class DIHCdkStack extends cdk.Stack {
     this.vpc.publicSubnets.forEach((element) => {
       securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
     });
-    this.vpc.isolatedSubnets.forEach((element) => {
-      securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(3306));
-    });
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
     return securityGroup;
@@ -198,6 +195,24 @@ export class DIHCdkStack extends cdk.Stack {
           "s3:DeleteObject",
           "s3:List*",
           "s3:GetBucketLocation",
+          "ssm:createResourceDataSync",
+          "ssm:listResourceDataSync",
+          "ssm:getOpsSummary",
+          "ssm:createAssociation",
+          "ssm:createDocument",
+          "ssm:startAssociationsOnce",
+          "ssm:startAutomationExecution",
+          "ssm:updateAssociation",
+          "ssm:listAssociations",
+          "ssm:listDocuments",
+          "ssm:getDocument",
+          "ssm:describeAssociation",
+          "ssm:describeAutomationExecutions",
+          "organizations:ListRoots",
+          "organizations:DescribeOrganization",
+          "organizations:ListOrganizationalUnitsForParent",
+          "organizations:EnableAWSServiceAccess",
+          "cloudformation:describe*",
         ],
         resources: ["*"],
       })
