@@ -4,14 +4,14 @@
 
 ## To Deploy
 
-Ensure aws-cdk is installed and [bootstrapped](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
+##### Ensure aws-cdk is installed and [bootstrapped](https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html).
 
 ```bash
 $ npm install -g aws-cdk
 $ cdk bootstrap
 ```
 
-Then build and deploy.
+##### Then build and deploy.
 
 ```bash
 $ npm run build
@@ -19,7 +19,9 @@ $ cdk synth
 $ cdk deploy
 ```
 
-Delete the stack. Make sure to remove all the policies from the role before running destroy
+##### Delete the stack. 
+
+!!!Note Make sure to remove all the policies from the role before running destroy
 
 ```bash
 $ cdk destroy

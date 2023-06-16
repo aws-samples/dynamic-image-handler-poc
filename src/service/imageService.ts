@@ -3,12 +3,7 @@
 
 import sharp, { FormatEnum } from "sharp";
 
-import {
-  ContentTypes,
-  StatusCodes,
-  ImageFitTypes,
-  ImageFormatTypes,
-} from "../lib/enums";
+import { ContentTypes, StatusCodes, ImageFitTypes, ImageFormatTypes } from "../lib/enums";
 import { ImageHandlerError, ImageEdits } from "../lib/types";
 import { ImageRequestInfo } from "../lib/interfaces";
 import S3 from "aws-sdk/clients/s3";
@@ -24,9 +19,7 @@ type OriginalImageInfo = Partial<{
 }>;
 
 export class ImageService {
-  public async processImage(
-    imageRequestInfo: ImageRequestInfo
-  ): Promise<Buffer> {
+  public async processImage(imageRequestInfo: ImageRequestInfo): Promise<Buffer> {
     try {
       return await this.setup(imageRequestInfo);
     } catch (error) {
@@ -41,10 +34,7 @@ export class ImageService {
    */
   private async setup(imageRequestInfo: ImageRequestInfo): Promise<Buffer> {
     try {
-      const originalImage = await this.getOriginalImage(
-        imageRequestInfo.bucket,
-        imageRequestInfo.key
-      );
+      const originalImage = await this.getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
 
       imageRequestInfo = { ...imageRequestInfo, ...originalImage };
 
@@ -76,10 +66,7 @@ export class ImageService {
    * @returns A Sharp image object
    */
   // eslint-disable-next-line @typescript-eslint/ban-types
-  private async instantiateSharpImage(
-    originalImage: Buffer,
-    options: NonNullable<unknown>
-  ): Promise<sharp.Sharp> {
+  private async instantiateSharpImage(originalImage: Buffer, options: NonNullable<unknown>): Promise<sharp.Sharp> {
     const image: sharp.Sharp = sharp(originalImage, options);
     return image;
   }
@@ -133,10 +120,7 @@ export class ImageService {
    * @param isAnimation a flag whether the edit applies to `gif` file or not.
    * @returns A modifications to the original image.
    */
-  public async applyEdits(
-    originalImage: sharp.Sharp,
-    edits: ImageEdits
-  ): Promise<sharp.Sharp> {
+  public async applyEdits(originalImage: sharp.Sharp, edits: ImageEdits): Promise<sharp.Sharp> {
     await this.applyResize(originalImage, edits);
 
     // Apply the image edits
@@ -157,26 +141,19 @@ export class ImageService {
    * @param originalImage The original sharp image.
    * @param edits The edits to be made to the original image.
    */
-  private async applyResize(
-    originalImage: sharp.Sharp,
-    edits: ImageEdits
-  ): Promise<void> {
+  private async applyResize(originalImage: sharp.Sharp, edits: ImageEdits): Promise<void> {
     if (edits.resize === undefined) {
       edits.resize = {};
       edits.resize.fit = ImageFitTypes.INSIDE;
     } else {
-      if (edits.resize.width)
-        edits.resize.width = Math.round(Number(edits.resize.width));
-      if (edits.resize.height)
-        edits.resize.height = Math.round(Number(edits.resize.height));
+      if (edits.resize.width) edits.resize.width = Math.round(Number(edits.resize.width));
+      if (edits.resize.height) edits.resize.height = Math.round(Number(edits.resize.height));
 
       if (edits.resize.ratio) {
         const ratio = edits.resize.ratio;
 
         const { width, height } =
-          edits.resize.width && edits.resize.height
-            ? edits.resize
-            : await originalImage.metadata();
+          edits.resize.width && edits.resize.height ? edits.resize : await originalImage.metadata();
 
         edits.resize.width = Math.round(width * ratio);
         edits.resize.height = Math.round(height * ratio);
@@ -194,24 +171,16 @@ export class ImageService {
    * @param imageRequestInfo the image request
    * @returns A Sharp image object
    */
-  private modifyImageOutput(
-    modifiedImage: sharp.Sharp,
-    imageRequestInfo: ImageRequestInfo
-  ): sharp.Sharp {
+  private modifyImageOutput(modifiedImage: sharp.Sharp, imageRequestInfo: ImageRequestInfo): sharp.Sharp {
     const modifiedOutputImage = modifiedImage;
 
     // modify if specified
     if (imageRequestInfo.outputFormat !== undefined) {
       // Include reduction effort for webp images if included
-      if (
-        imageRequestInfo.outputFormat === ImageFormatTypes.WEBP &&
-        typeof imageRequestInfo.effort !== "undefined"
-      ) {
+      if (imageRequestInfo.outputFormat === ImageFormatTypes.WEBP && typeof imageRequestInfo.effort !== "undefined") {
         modifiedOutputImage.webp({ effort: imageRequestInfo.effort });
       } else {
-        modifiedOutputImage.toFormat(
-          ImageService.convertImageFormatType(imageRequestInfo.outputFormat)
-        );
+        modifiedOutputImage.toFormat(ImageService.convertImageFormatType(imageRequestInfo.outputFormat));
       }
     }
 
@@ -223,9 +192,7 @@ export class ImageService {
    * @param imageFormatType Result output file type.
    * @returns Converted 'sharp' format.
    */
-  private static convertImageFormatType(
-    imageFormatType: ImageFormatTypes
-  ): keyof FormatEnum {
+  private static convertImageFormatType(imageFormatType: ImageFormatTypes): keyof FormatEnum {
     switch (imageFormatType) {
       case ImageFormatTypes.JPG:
         return "jpg";
@@ -258,10 +225,7 @@ export class ImageService {
    * @param key The key name corresponding to the image.
    * @returns The original image or an error.
    */
-  public async getOriginalImage(
-    bucket: string,
-    key: string
-  ): Promise<OriginalImageInfo> {
+  public async getOriginalImage(bucket: string, key: string): Promise<OriginalImageInfo> {
     try {
       const result: OriginalImageInfo = {};
 
@@ -273,11 +237,7 @@ export class ImageService {
 
       if (originalImage.ContentType) {
         // If using default S3 ContentType infer from hex headers
-        if (
-          ["binary/octet-stream", "application/octet-stream"].includes(
-            originalImage.ContentType
-          )
-        ) {
+        if (["binary/octet-stream", "application/octet-stream"].includes(originalImage.ContentType)) {
           result.contentType = this.inferImageType(imageBuffer);
         } else {
           result.contentType = originalImage.ContentType;
@@ -291,13 +251,10 @@ export class ImageService {
       }
 
       if (originalImage.LastModified) {
-        result.lastModified = new Date(
-          originalImage.LastModified
-        ).toUTCString();
+        result.lastModified = new Date(originalImage.LastModified).toUTCString();
       }
 
-      result.cacheControl =
-        originalImage.CacheControl ?? "max-age=31536000,public";
+      result.cacheControl = originalImage.CacheControl ?? "max-age=31536000,public";
       result.originalImage = imageBuffer;
 
       return result;
@@ -318,10 +275,7 @@ export class ImageService {
    * @returns The output format.
    */
   public inferImageType(imageBuffer: Buffer): string {
-    const imageSignature = imageBuffer
-      .slice(0, 4)
-      .toString("hex")
-      .toUpperCase();
+    const imageSignature = imageBuffer.slice(0, 4).toString("hex").toUpperCase();
     switch (imageSignature) {
       case "89504E47":
         return ContentTypes.PNG;

@@ -13,10 +13,7 @@ if (!existsSync(logDir)) {
 
 const logger: Logger = winston.createLogger({
   format: winston.format.json(),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: `${logDir}/app.log` }),
-  ],
+  transports: [new winston.transports.Console(), new winston.transports.File({ filename: `${logDir}/app.log` })],
 });
 
 export default logger;

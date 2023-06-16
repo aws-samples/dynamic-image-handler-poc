@@ -81,10 +81,7 @@ class Environment implements IEnvironment {
    * @returns
    */
   public isDevEnvironment(): boolean {
-    return (
-      this.getCurrentEnvironment() === Environments.DEV ||
-      this.getCurrentEnvironment() === Environments.LOCAL
-    );
+    return this.getCurrentEnvironment() === Environments.DEV || this.getCurrentEnvironment() === Environments.LOCAL;
   }
 
   /**

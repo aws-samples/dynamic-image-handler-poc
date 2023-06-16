@@ -8,9 +8,6 @@ This is a PoC created to support dynamic image rendition with an image resize su
 
 ![image](./arch-diagram.png)
 
-
-
-
 ## Input / Output
 
 Request:
@@ -44,25 +41,25 @@ Modified image response
 Clone the source code  
 From the source root directory, run the below commands
 
-Install the dependencies
+##### Install the dependencies
 
 ```
 npm install
 ```
 
-Setup ESLint
+##### Setup ESLint
 
 ```
 npm init @eslint/config
 ```
 
-Local build
+##### Local build
 
 ```
 npm run build
 ```
 
-Local run
+##### Local run
 
 ```
 npm run start
@@ -72,26 +69,32 @@ npm run start
 
 CDK deployment - This will install VPC, Subnets, NAT Gateway, ALB, ASG, EC2 launch configuration. Cloudfront deployment is not included in this stack. Please set it up manually if required. If deplpoying into GovCloud, you can utilize commercial CloudFront with GovCloud Origin as described here - https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/setting-up-cloudfront.html
 
-Install latest cdk version
+!!!Note This deploymet doesn't add HTTPS certificates to ALB. Uses HTTP by default. Please modify the script to add HTTPS support for actual app implementation.
+
+
+#####  Install latest cdk version
 
 ```
 npm install -g aws-cdk
 ```
-Make sure you are in source root directory.
 
-Goto `constructs` directory to access CDK scripts 
+
+#####  Make sure you are in source root directory.
+
+>Goto `constructs` directory to access CDK scripts 
+
 ```
 cd constructs
 ```
 
-Install and build the cdk scripts
+#####  Install and build the cdk scripts
 
 ```
 npm i
 npm run build
 ```
 
-Execute below CDK commands to deploy the infrastructure and the application
+##### Execute below CDK commands to deploy the infrastructure and the application
 
 ```
 cdk bootstrap
@@ -100,15 +103,15 @@ cdk synth
 
 ```
 
-Once you verify the synth output, deploy the stack using
+##### Once you verify the synth output, deploy the stack using
 
 ```
 cdk deploy
 ```
 
-This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
+!!!Note This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
 
-Cleanup
+### Cleanup
 
 Make sure to detach all policies from the role created. Then execute the below comman.
 

@@ -13,36 +13,31 @@ export const processImage = express.Router();
  * Route to process the image and return the image in the specified format.
  *
  */
-processImage.get(
-  "/image/:bucket/:edits/:key",
-  async (req: Request, res: Response) => {
-    const imageService = new ImageService();
-    const resizeEdit: ImageEdits = { resize: {} };
-    const imageRequestInfo: ImageRequestInfo = <ImageRequestInfo>{};
-    const bucket = req.params.bucket;
-    const edits = req.params.edits;
-    const key = req.params.key;
+processImage.get("/image/:bucket/:edits/:key", async (req: Request, res: Response) => {
+  const imageService = new ImageService();
+  const resizeEdit: ImageEdits = { resize: {} };
+  const imageRequestInfo: ImageRequestInfo = <ImageRequestInfo>{};
+  const bucket = req.params.bucket;
+  const edits = req.params.edits;
+  const key = req.params.key;
 
-    imageRequestInfo.bucket = bucket;
-    imageRequestInfo.key = key;
+  imageRequestInfo.bucket = bucket;
+  imageRequestInfo.key = key;
 
-    resizeEdit.resize.width =
-      edits != null ? edits.split(new RegExp("X", "i"))[0] : null;
-    resizeEdit.resize.height =
-      edits != null ? edits.split(new RegExp("X", "i"))[1] : null;
-    resizeEdit.resize.fit = ImageFitTypes.FILL;
-    imageRequestInfo.edits = resizeEdit;
+  resizeEdit.resize.width = edits != null ? edits.split(new RegExp("X", "i"))[0] : null;
+  resizeEdit.resize.height = edits != null ? edits.split(new RegExp("X", "i"))[1] : null;
+  resizeEdit.resize.fit = ImageFitTypes.FILL;
+  imageRequestInfo.edits = resizeEdit;
 
-    const imageBuffer = await imageService.processImage(imageRequestInfo);
+  const imageBuffer = await imageService.processImage(imageRequestInfo);
 
-    const contentType = inferImageType(imageBuffer);
-    //console.info(imageRequestInfo.outputFormat);
-    res.contentType(contentType);
-    res.status(StatusCodes.OK);
-    res.write(imageBuffer);
-    res.end();
-  }
-);
+  const contentType = inferImageType(imageBuffer);
+  //console.info(imageRequestInfo.outputFormat);
+  res.contentType(contentType);
+  res.status(StatusCodes.OK);
+  res.write(imageBuffer);
+  res.end();
+});
 
 processImage.get("/health", async (req: Request, res: Response) => {
   res.status(StatusCodes.OK);
