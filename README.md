@@ -113,7 +113,7 @@ NOTE: This should deploy all the required infra components and the application. 
 
 ### Cleanup
 
-Make sure to detach all policies from the role created. Then execute the below comman.
+Make sure to detach all policies from the role created. Then execute the below command.
 
 ```
 cdk destroy
