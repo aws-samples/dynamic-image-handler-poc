@@ -40,7 +40,7 @@ aws iam list-attached-role-policies --role-name $role-name
 aws iam detach-role-policy --role-name $role-name --policy-arn $policy-arn
 
 ```
-ß
+
 ###### Stack cleanup   
 
 ```bash

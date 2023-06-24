@@ -111,11 +111,34 @@ cdk deploy
 
 NOTE: This should deploy all the required infra components and the application. Use ALB DNS URL to verify the application. Use postman to process the image. Make sure, you pass the appropriate S3 bucket and image to succesfully process the images.
 
-### Cleanup
 
-Make sure to detach all policies from the role created. Then execute the below command.
+#### Cleanup 
+
+!!!Note Make sure to remove all the policies from the role before running destroy
 
 ```
-cdk destroy
+//List the role
+aws iam list-roles | jq -r '.Roles[] | select(.RoleName|match("DIH-CDK-Stack-EC2IAMRole."))'
+
+// Copy the full rolename (role-name)
+// "RoleName" :
+
+//List attached policy
+aws iam list-attached-role-policies --role-name $role-name
+
+// Copy Policy ARN (policy-arn)
+//"AttachedPolicies"
+
+//Detach the policies attached to the role
+aws iam detach-role-policy --role-name $role-name --policy-arn $policy-arn
+
 ```
+
+###### Stack cleanup   
+
+```bash
+$ cdk destroy
+```
+
+
 
