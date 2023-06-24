@@ -19,9 +19,29 @@ $ cdk synth
 $ cdk deploy
 ```
 
-##### Delete the stack. 
+#### Cleanup 
 
 !!!Note Make sure to remove all the policies from the role before running destroy
+
+```
+//List the role
+aws iam list-roles | jq -r '.Roles[] | select(.RoleName|match("DIH-CDK-Stack-EC2IAMRole."))'
+
+// Copy the full rolename (role-name)
+// "RoleName" :
+
+//List attached policy
+aws iam list-attached-role-policies --role-name $role-name
+
+// Copy Policy ARN (policy-arn)
+//"AttachedPolicies"
+
+//Detach the policies attached to the role
+aws iam detach-role-policy --role-name $role-name --policy-arn $policy-arn
+
+```
+ß
+###### Stack cleanup   
 
 ```bash
 $ cdk destroy

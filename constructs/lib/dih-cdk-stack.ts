@@ -1,5 +1,6 @@
 import { Construct } from "constructs";
 import { Aspects, CfnMapping, CfnOutput, CfnParameter, Stack, StackProps, Tags } from "aws-cdk-lib";
+import { NagSuppressions } from 'cdk-nag';
 
 import * as cdk from "aws-cdk-lib";
 import {
@@ -32,6 +33,7 @@ export class DIHCdkStack extends cdk.Stack {
   public readonly loadBalancer: elb.CfnLoadBalancer;
 
   public readonly CfnLaunchConfiguration: asg.CfnLaunchConfiguration;
+  public readonly CfnLaunchTemplate: ec2.CfnLaunchTemplate;
   public readonly CfnAutoScalingGroup: asg.CfnAutoScalingGroup;
   public readonly CfnLoadBalancer: elb.CfnLoadBalancer;
   public readonly CfnDefaultALBTargetGroup: elb.CfnTargetGroup;
@@ -83,11 +85,11 @@ export class DIHCdkStack extends cdk.Stack {
     // Create IAM Role for EC2 instance
     this.IAMRole = this.addIAMRole();
 
-    // Create auto scaling group - Launch Configuration
-    this.CfnLaunchConfiguration = this.addLaunchConfiguration(props);
+    // Create ASG - Launch template
+    this.CfnLaunchTemplate = this.addLaunchTemplate(props);
 
     // Waiting for VPC creation to complete
-    this.CfnLaunchConfiguration.node.addDependency(this.vpc);
+    this.CfnLaunchTemplate.node.addDependency(this.vpc);
 
     // Create auto scaling group in above created VPC
     this.CfnAutoScalingGroup = this.addAutoScalingGroup(props);
@@ -136,10 +138,11 @@ export class DIHCdkStack extends cdk.Stack {
     securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
     securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
     this.vpc.privateSubnets.forEach((element) => {
-      securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
+      //securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
+      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
+      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
     });
-    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
-    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+
     return securityGroup;
   }
 
@@ -154,9 +157,10 @@ export class DIHCdkStack extends cdk.Stack {
     });
     this.vpc.publicSubnets.forEach((element) => {
       securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
+      securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
+      securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
     });
-    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
-    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
     return securityGroup;
   }
 
@@ -217,6 +221,7 @@ export class DIHCdkStack extends cdk.Stack {
         resources: ["*"],
       })
     );
+
     return iamRole;
   }
 
@@ -287,7 +292,7 @@ export class DIHCdkStack extends cdk.Stack {
     const key = new KeyPair(this, "DIH-Key-Pair", {
       name: "cdk-dih-key",
       description: "Key Pair to access the EC2 instance",
-      storePublicKey: true, // by default the public key will not be stored in Secrets Manager
+      storePublicKey: false, // by default the public key will not be stored in Secrets Manager
     });
     key.grantReadOnPublicKey;
 
@@ -299,11 +304,22 @@ export class DIHCdkStack extends cdk.Stack {
     return new asg.CfnLaunchConfiguration(this, "LaunchConfig", {
       imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2().getImage(this).imageId,
       instanceType: props.instanceType,
+      associatePublicIpAddress: false,
+     // blockDeviceMappings: [{
+     //   deviceName: '/dev/sdm',
+     //   ebs: {
+      //    encrypted: true,
+      //    deleteOnTermination: true,
+      //    volumeSize: 100,
+      //    volumeType: ec2.EbsDeviceVolumeType.GP3
+      //  }
+     // }],
       keyName: key.keyPairName,
       userData: cdk.Fn.base64(userdata),
       iamInstanceProfile: new iam.CfnInstanceProfile(this, "InstanceProfile", { roles: [this.IAMRole.roleName] })
         .attrArn,
       securityGroups: [this.EC2SecurityGroup.securityGroupId],
+
     });
   }
 
@@ -318,12 +334,78 @@ export class DIHCdkStack extends cdk.Stack {
       minSize: props.asgMinSize ? props.asgMinSize.toString() : this.defaultASGCapacity.toString(),
       maxSize: props.asgMaxSize ? props.asgMaxSize.toString() : this.defaultASGCapacity.toString(),
       desiredCapacity: props.asgDesiredSize ? props.asgDesiredSize.toString() : this.defaultASGCapacity.toString(),
-      launchConfigurationName: this.CfnLaunchConfiguration.ref,
+      launchTemplate: {
+        launchTemplateId: this.CfnLaunchTemplate.ref,
+        version: this.CfnLaunchTemplate.attrLatestVersionNumber,
+      },
       vpcZoneIdentifier: privateSubnets.subnetIds,
       targetGroupArns: [this.CfnDefaultALBTargetGroup.ref],
+
     });
   }
 
+  /**
+   * Function to add Launch Template resource to CloudFormation stack.
+   * @param props  Properties of the construct.
+   * @returns Launch Template resource.
+   */
+  private addLaunchTemplate(props: DIHStackProps): ec2.CfnLaunchTemplate {
+
+    let basePath: string = path.join(__dirname, "..");
+    let userdataFilePath: string = path.join(basePath, "scripts", "userdata.sh");
+    var userdataLoc = props.userdata ? props.userdata : userdataFilePath;
+    let userdata = fs.readFileSync(userdataLoc, "utf8");
+    const blockDeviceVolume = ec2.BlockDeviceVolume.ebs(80);
+    const blockDevice: ec2.BlockDevice = {
+      deviceName: '/dev/sdm',
+      volume: blockDeviceVolume,
+
+      // the properties below are optional
+      mappingEnabled: false,
+    };
+
+    const key = new KeyPair(this, "DIH-Key-Pair", {
+      name: "cdk-dih-key",
+      description: "Key Pair to access the EC2 instance",
+      storePublicKey: false, // by default the public key will not be stored in Secrets Manager
+    });
+    key.grantReadOnPublicKey;
+
+    const instProfileArn = new iam.CfnInstanceProfile(this, "InstanceProfile", { roles: [this.IAMRole.roleName] })
+    .attrArn;
+
+    return new ec2.CfnLaunchTemplate(this, "LaunchTemplate", {
+      launchTemplateData: {
+        instanceType: props.instanceType,
+        blockDeviceMappings: [{
+          deviceName: '/dev/sdm',
+          ebs: {
+            encrypted: true,
+            deleteOnTermination: true,
+            volumeSize: 50,
+            volumeType: ec2.EbsDeviceVolumeType.GP3
+          }
+        }],
+        ebsOptimized: true,
+        iamInstanceProfile: {
+          arn: instProfileArn
+        },
+        imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2().getImage(this).imageId,
+        instanceInitiatedShutdownBehavior: "terminate",
+        keyName: key.keyPairName,
+
+        monitoring: {
+          enabled: true,
+        },
+        securityGroupIds: [this.EC2SecurityGroup.securityGroupId],
+
+       // securityGroups: [this.EC2SecurityGroup.securityGroupId],
+        userData: cdk.Fn.base64(userdata),
+      },
+    });
+
+
+  }
   /**
    * Function to add Outputs to CloudFormation stack.
    * @returns
