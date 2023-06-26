@@ -5,7 +5,7 @@
 This is a PoC created to support dynamic image rendition with an image resize support. Additional features can be added as required in the future. This is developed based on the Sharp opensource framework. This application can be used as a standalone NodeJS app running in EC2. 
 ## Architecture
 
-![image](./arch-diagram.png)
+![image](./arch-diagram1.png)
 
 ## Input / Output
 
