@@ -16,12 +16,7 @@ const stack = new DIHCdkStack(app, "DIH-CDK-Stack", props);
 Aspects.of(app).add(new AwsSolutionsChecks({ verbose: true }));
 
 NagSuppressions.addStackSuppressions(stack, [
-  { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Action::cloudformation:describe*'] },
-  { id: 'AwsSolutions-EC26', reason: 'Not an error' },
-  { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Action::kms:GenerateDataKey*'] },
-  { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Action::kms:ReEncrypt*'] },
-  { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Action::s3:Get*'] },
-  { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Action::s3:List*'] },
+
   { id: 'AwsSolutions-EC23', reason: 'ALB expose port 80 to users. Not an error' },
   { id: 'AwsSolutions-IAM5', reason: 'IAM wildcard resource. Not an error', appliesTo: ['Resource::*'] },
   { id: 'AwsSolutions-IAM5', reason: 'Keypair wildcard. Not an error', appliesTo: ['Resource::arn:<AWS::Partition>:ec2:*:*:key-pair/*'] },

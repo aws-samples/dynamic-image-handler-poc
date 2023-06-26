@@ -133,15 +133,10 @@ export class DIHCdkStack extends cdk.Stack {
   private createALBSecurityGroup(): ec2.SecurityGroup {
     var securityGroup = new ec2.SecurityGroup(this, "DIHALBSecurityGroup", {
       vpc: this.vpc,
-      allowAllOutbound: false,
+      allowAllOutbound: true,
     });
     securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
     securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
-    this.vpc.privateSubnets.forEach((element) => {
-      //securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
-      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
-      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
-    });
 
     return securityGroup;
   }
@@ -153,13 +148,12 @@ export class DIHCdkStack extends cdk.Stack {
   private createEC2SecurityGroup(): ec2.SecurityGroup {
     var securityGroup = new ec2.SecurityGroup(this, "DIHEC2SecurityGroup", {
       vpc: this.vpc,
-      allowAllOutbound: false,
+      allowAllOutbound: true,
     });
     this.vpc.publicSubnets.forEach((element) => {
       securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
-      securityGroup.addEgressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
-      securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
-      securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+      securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(443));
+
     });
     return securityGroup;
   }
@@ -192,12 +186,12 @@ export class DIHCdkStack extends cdk.Stack {
           "secretsmanager:GetSecretValue",
           "kms:Decrypt",
           "kms:Encrypt",
-          "kms:ReEncrypt*",
-          "kms:GenerateDataKey*",
-          "s3:Get*",
+          "kms:ReEncrypt",
+          "kms:GenerateDataKey",
+          "s3:GetObject",
           "s3:PutObject",
           "s3:DeleteObject",
-          "s3:List*",
+          "s3:ListObject",
           "s3:GetBucketLocation",
           "ssm:createResourceDataSync",
           "ssm:listResourceDataSync",
@@ -216,7 +210,7 @@ export class DIHCdkStack extends cdk.Stack {
           "organizations:DescribeOrganization",
           "organizations:ListOrganizationalUnitsForParent",
           "organizations:EnableAWSServiceAccess",
-          "cloudformation:describe*",
+          "cloudformation:DescribeStacks",
         ],
         resources: ["*"],
       })
@@ -284,46 +278,6 @@ export class DIHCdkStack extends cdk.Stack {
   }
 
   /**
-   * Function to add Launch Configuration resource to CloudFormation stack.
-   * @param props  Properties of the construct.
-   * @returns Launch Configuration resource.
-   */
-  private addLaunchConfiguration(props: DIHStackProps): asg.CfnLaunchConfiguration {
-    const key = new KeyPair(this, "DIH-Key-Pair", {
-      name: "cdk-dih-key",
-      description: "Key Pair to access the EC2 instance",
-      storePublicKey: false, // by default the public key will not be stored in Secrets Manager
-    });
-    key.grantReadOnPublicKey;
-
-    let basePath: string = path.join(__dirname, "..");
-    let userdataFilePath: string = path.join(basePath, "scripts", "userdata.sh");
-    var userdataLoc = props.userdata ? props.userdata : userdataFilePath;
-    let userdata = fs.readFileSync(userdataLoc, "utf8");
-
-    return new asg.CfnLaunchConfiguration(this, "LaunchConfig", {
-      imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2().getImage(this).imageId,
-      instanceType: props.instanceType,
-      associatePublicIpAddress: false,
-     // blockDeviceMappings: [{
-     //   deviceName: '/dev/sdm',
-     //   ebs: {
-      //    encrypted: true,
-      //    deleteOnTermination: true,
-      //    volumeSize: 100,
-      //    volumeType: ec2.EbsDeviceVolumeType.GP3
-      //  }
-     // }],
-      keyName: key.keyPairName,
-      userData: cdk.Fn.base64(userdata),
-      iamInstanceProfile: new iam.CfnInstanceProfile(this, "InstanceProfile", { roles: [this.IAMRole.roleName] })
-        .attrArn,
-      securityGroups: [this.EC2SecurityGroup.securityGroupId],
-
-    });
-  }
-
-  /**
    * Function to add AWS Auto Scaling Group resource to CloudFormation stack.
    * @param props  Properties of the construct.
    * @returns AWS Auto Scaling Group resource.
@@ -355,19 +309,11 @@ export class DIHCdkStack extends cdk.Stack {
     let userdataFilePath: string = path.join(basePath, "scripts", "userdata.sh");
     var userdataLoc = props.userdata ? props.userdata : userdataFilePath;
     let userdata = fs.readFileSync(userdataLoc, "utf8");
-    const blockDeviceVolume = ec2.BlockDeviceVolume.ebs(80);
-    const blockDevice: ec2.BlockDevice = {
-      deviceName: '/dev/sdm',
-      volume: blockDeviceVolume,
-
-      // the properties below are optional
-      mappingEnabled: false,
-    };
 
     const key = new KeyPair(this, "DIH-Key-Pair", {
       name: "cdk-dih-key",
       description: "Key Pair to access the EC2 instance",
-      storePublicKey: false, // by default the public key will not be stored in Secrets Manager
+      storePublicKey: true, // by default the public key will not be stored in Secrets Manager
     });
     key.grantReadOnPublicKey;
 
@@ -398,8 +344,6 @@ export class DIHCdkStack extends cdk.Stack {
           enabled: true,
         },
         securityGroupIds: [this.EC2SecurityGroup.securityGroupId],
-
-       // securityGroups: [this.EC2SecurityGroup.securityGroupId],
         userData: cdk.Fn.base64(userdata),
       },
     });
