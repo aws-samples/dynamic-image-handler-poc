@@ -2,8 +2,7 @@
 
 ## About
 
-This is a PoC created to support dynamic image rendition with an image resize support. Additional features can be added as required in the future. This is developed based on the Sharp opensource framework. This application can be used as a standalone NodeJS app running in EC2 or containerize it.
-
+This is a PoC created to support dynamic image rendition with an image resize support. Additional features can be added as required in the future. This is developed based on the Sharp opensource framework. This application can be used as a standalone NodeJS app running in EC2. 
 ## Architecture
 
 ![image](./arch-diagram.png)
@@ -15,6 +14,7 @@ Access the DIH with below URI path:
 
 http://{{host}}:{{port}}/image/:bucket/:edits/:key
 
+> port - Using port 80 in this PoC, this can be changed in .env file
 > bucket - Source S3 bucket where the image is stored
 > edits - {{width}}x{{height}} - Expected resize image size
 > key - Image name with extension
@@ -22,7 +22,7 @@ http://{{host}}:{{port}}/image/:bucket/:edits/:key
 Sample request:
 http://localhost/image/source-bucket/800x800/sample1.jpg
 
-Response:
+Sample response:
 Modified image response
 
 ![image](./postmanrequest.png)
@@ -57,7 +57,7 @@ cd dynamic-image-handler-poc
 npm install
 ```
 
-##### Setup ESLint
+##### Setup ESLint (Follow the prompt to install ESLint using TypeScript with JSON configuration)
 
 ```
 npm init @eslint/config
