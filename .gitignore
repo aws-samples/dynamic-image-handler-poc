@@ -8,6 +8,7 @@
 **/tmp
 **/out-tsc
 **/build
+**/logs
 
 # dependencies
 **/node_modules

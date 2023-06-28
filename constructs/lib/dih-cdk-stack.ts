@@ -1,6 +1,6 @@
 import { Construct } from "constructs";
 import { Aspects, CfnMapping, CfnOutput, CfnParameter, Stack, StackProps, Tags } from "aws-cdk-lib";
-import { NagSuppressions } from 'cdk-nag';
+import { NagSuppressions } from "cdk-nag";
 
 import * as cdk from "aws-cdk-lib";
 import {
@@ -153,7 +153,6 @@ export class DIHCdkStack extends cdk.Stack {
     this.vpc.publicSubnets.forEach((element) => {
       securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(80));
       securityGroup.addIngressRule(ec2.Peer.ipv4(element.ipv4CidrBlock), ec2.Port.tcp(443));
-
     });
     return securityGroup;
   }
@@ -294,7 +293,6 @@ export class DIHCdkStack extends cdk.Stack {
       },
       vpcZoneIdentifier: privateSubnets.subnetIds,
       targetGroupArns: [this.CfnDefaultALBTargetGroup.ref],
-
     });
   }
 
@@ -304,7 +302,6 @@ export class DIHCdkStack extends cdk.Stack {
    * @returns Launch Template resource.
    */
   private addLaunchTemplate(props: DIHStackProps): ec2.CfnLaunchTemplate {
-
     let basePath: string = path.join(__dirname, "..");
     let userdataFilePath: string = path.join(basePath, "scripts", "userdata.sh");
     var userdataLoc = props.userdata ? props.userdata : userdataFilePath;
@@ -318,23 +315,25 @@ export class DIHCdkStack extends cdk.Stack {
     key.grantReadOnPublicKey;
 
     const instProfileArn = new iam.CfnInstanceProfile(this, "InstanceProfile", { roles: [this.IAMRole.roleName] })
-    .attrArn;
+      .attrArn;
 
     return new ec2.CfnLaunchTemplate(this, "LaunchTemplate", {
       launchTemplateData: {
         instanceType: props.instanceType,
-        blockDeviceMappings: [{
-          deviceName: '/dev/sdm',
-          ebs: {
-            encrypted: true,
-            deleteOnTermination: true,
-            volumeSize: 50,
-            volumeType: ec2.EbsDeviceVolumeType.GP3
-          }
-        }],
+        blockDeviceMappings: [
+          {
+            deviceName: "/dev/sdm",
+            ebs: {
+              encrypted: true,
+              deleteOnTermination: true,
+              volumeSize: 50,
+              volumeType: ec2.EbsDeviceVolumeType.GP3,
+            },
+          },
+        ],
         ebsOptimized: true,
         iamInstanceProfile: {
-          arn: instProfileArn
+          arn: instProfileArn,
         },
         imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2().getImage(this).imageId,
         instanceInitiatedShutdownBehavior: "terminate",
@@ -347,8 +346,6 @@ export class DIHCdkStack extends cdk.Stack {
         userData: cdk.Fn.base64(userdata),
       },
     });
-
-
   }
   /**
    * Function to add Outputs to CloudFormation stack.
