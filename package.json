@@ -50,6 +50,7 @@
     "jest-sonar-reporter": "^2.0.0",
     "nodemon": "^2.0.21",
     "prettier": "2.8.8",
-    "ts-jest": "^29.0.5"
+    "ts-jest": "^29.0.5",
+    "ts-node": "10.9.1"
   }
 }
