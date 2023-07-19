@@ -8,6 +8,7 @@
 **/tmp
 **/out-tsc
 **/build
+**/logs
 
 # dependencies
 **/node_modules
@@ -22,6 +23,7 @@
 **/npm-debug.log
 **/testem.log
 **/.vscode/settings.json
+**/logs/app.log
 
 
 # System Files

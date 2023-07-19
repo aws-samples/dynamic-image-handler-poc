@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { AwsSolutionsChecks, NagSuppressions } from 'cdk-nag'
 import { App, Aspects } from 'aws-cdk-lib';
+
 import { DIHCdkStack } from "../lib/dih-cdk-stack";
 import { DIHStackProps } from "../lib/dih-stack-props";
 
@@ -27,4 +28,5 @@ NagSuppressions.addStackSuppressions(stack, [
     reason: "The lambda function runs appropriate runtime and does not require the latest version."
   },
   { id: 'AwsSolutions-AS3', reason: 'No notification setup for PoC' }
+
 ]);
