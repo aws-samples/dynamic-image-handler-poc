@@ -21,12 +21,13 @@ processImage.get("/image/:bucket/:edits/:key", async (req: Request, res: Respons
   const edits = req.params.edits;
   const key = req.params.key;
 
+
   imageRequestInfo.bucket = bucket;
   imageRequestInfo.key = key;
 
   resizeEdit.resize.width = edits != null ? edits.split(new RegExp("X", "i"))[0] : null;
   resizeEdit.resize.height = edits != null ? edits.split(new RegExp("X", "i"))[1] : null;
-  resizeEdit.resize.fit = ImageFitTypes.FILL;
+  resizeEdit.resize.fit = ImageFitTypes.INSIDE;
   imageRequestInfo.edits = resizeEdit;
 
   const imageBuffer = await imageService.processImage(imageRequestInfo);
