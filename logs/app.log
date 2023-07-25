@@ -1,7 +1,0 @@
-{"level":"info","message":"Listening on :::3146"}
-{"level":"info","message":"Listening on :::80"}
-{"level":"info","message":"Listening on :::80"}
-{"level":"error","message":"Unhandled Promise Rejection: reason:"}
-{"level":"error","message":"TypeError: Cannot read properties of undefined (reading 'slice')\n    at inferImageType (/Users/madhusba/work/myopensource/dynamic-image-handler-poc/src/routes/processImage.ts:53:38)\n    at /Users/madhusba/work/myopensource/dynamic-image-handler-poc/src/routes/processImage.ts:34:23\n    at processTicksAndRejections (node:internal/process/task_queues:95:5)"}
-{"level":"info","message":"Listening on :::80"}
-{"level":"info","message":"Listening on :::80"}
