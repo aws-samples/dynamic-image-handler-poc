@@ -16,8 +16,7 @@ const props: DIHStackProps = {
 describe('DIH CDK Test', () => {
   test('DIH CDK Stack', () => {
     const stack = new DIHCdkStack(app, 'DIH-CDK-Stack', props);
-  
-\
+
   });
 });
 // Nag checks
