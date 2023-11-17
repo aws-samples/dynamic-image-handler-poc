@@ -10,7 +10,6 @@ mkdir app
 cd app/
 git clone https://github.com/aws-samples/dynamic-image-handler-poc.git
 cd dynamic-image-handler-poc/
-#curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -
 sudo yum install https://rpm.nodesource.com/pub_20.x/nodistro/repo/nodesource-release-nodistro-1.noarch.rpm -y
 sudo yum install nodejs -y --setopt=nodesource-nodejs.module_hotfixes=1
 sudo chmod 755 -R /home/ec2-user/app/dynamic-image-handler-poc/
