@@ -345,7 +345,7 @@ export class DIHCdkStack extends cdk.Stack {
           arn: instProfileArn
 
         },
-        imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2().getImage(this).imageId,
+        imageId: props.imageId ? props.imageId : ec2.MachineImage.latestAmazonLinux2023().getImage(this).imageId,
         instanceInitiatedShutdownBehavior: "terminate",
         keyName: key.keyPairName,
 
